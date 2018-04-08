@@ -9,7 +9,7 @@ class Mystore_model extends MY_model {
     }
     
     public function get_mystore_list($params = array()) {
-        $fieldArray = array('cp.c_name as name', 'cp.c_logo as logo');
+        $fieldArray = array('cp.c_name as name', 'cp.c_logo as logo','cml.uacct_id as supplier_id');
         
         $this->db->select($fieldArray)
                  ->from($this->table)

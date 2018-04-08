@@ -111,7 +111,7 @@ class Cart extends REST_Controller {
 
     public function list_post() {
         $condition = array('cmt.customer_id' => $this->customer_id);
-        $fieldArray = array('cmt.id as cart_id', 'cmt.quantity', 'pm.prod_id', 'pm.prod_img', 'pm.prod_title', 'pm.prod_price', 'pm.prod_discount', 'pm.flat_discount', 'pm.stock_status');
+        $fieldArray = array('cmt.id as cart_id', 'cmt.quantity', 'pm.*');
 
         $cartData = $this->cart_model->cart_list($condition, $fieldArray);
 
