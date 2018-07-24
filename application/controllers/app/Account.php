@@ -1,9 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once APPPATH.'libraries/REST_Controller.php';
-
-class Account extends REST_Controller {
+class Account extends BASE_Api {
     
     public function __construct() {
         parent::__construct();
@@ -128,7 +126,7 @@ class Account extends REST_Controller {
         	$loginCredential['password'] = md5($password);
         }
         $loginData = $this->account->get_row_byid('customer_master', 
-                $loginCredential, array('id customer_id', 'email', 'name', 'profile_pic', 'gender', 'mobile', 'acct_balance', 'acct_wallet', 'acct_lock'));
+                $loginCredential, array('id customer_id', 'email', 'name', 'profile_pic', 'gender', 'mobile', 'acct_balance', 'acct_wallet', 'acct_lock','mobile_verification','address','bdate','state','city','pincode'));
         
         if($loginData) {
             $this->response(array('status' => REST_CONTROLLER::HTTP_OK, 'data' => $loginData));
@@ -232,6 +230,43 @@ class Account extends REST_Controller {
             $this->email_notification->message = $email;
             $this->email_notification->sendMail();
             unset($this->email_notification);
+    }
+    
+    public function forgotpassword_put(){
+        $postData = array(
+            'email' => $this->put('email')
+        );
+        
+        if(empty($postData['email'])) {
+            $this->response(array('status' => REST_Controller::HTTP_BAD_REQUEST, 'data' => 'email key required.'));
+        }
+        
+        $profileData = $this->account->get_row_byid('customer_master', $postData, array('id', 'email','mobile','IF(name="", "user", name) AS name'));
+        if (empty($profileData)) {
+            $this->response(array('status' => REST_CONTROLLER::HTTP_BAD_REQUEST, 'data' => 'Sorry, no such account registered with us for this details.'));
+        }
+        $password = randPassword();
+        if ($this->account->update_data(array('password' => md5($password)), 'customer_master', array('id' => $profileData->id))) {
+            if(!empty($profileData->email)) {
+                $this->load->library('email_notification');
+                $this->email_notification->subject = "Bigmee E-Commerce- Account password reset";
+                $this->email_notification->to = $profileData->email;
+                $email = "Dear ".$profileData->name.',<br>';
+                $email .= "\t\t Your account password has been reset, new password is <i>{$password}</i>";
+
+                $this->email_notification->message = $email;
+                $this->email_notification->sendMail();
+                unset($this->email_notification);
+            }
+            if(!empty($profileData->mobile)) {
+                $this->load->library('sms_notification');
+                $this->sms_notification->textmessage = "Dear {$profileData->name}, Your account password has been reset, new password is {$password}";
+                $this->sms_notification->sendMessage($profileData->mobile);
+                unset($this->sms_notification);
+            }
+            
+            $this->response(array('status' => REST_CONTROLLER::HTTP_OK, 'data' => 'Account password has been successfully reset and sent on email,mobile.'));
+        }
     }
         
 }

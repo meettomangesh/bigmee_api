@@ -1,4 +1,4 @@
-<script src="<?= base_url('dist/js/accordion-menu.js') ?>"></script>
+<script src="<?= base_url('dist/js/accordion-menu.js?v=1.1') ?>"></script>
 
       
 <section class="section-padding-bottom">

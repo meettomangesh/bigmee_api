@@ -8,7 +8,6 @@ class Customer extends MY_Controller {
     }
     
     public function index() {
-        die('Welcome to customer panel.');         
     }
     
     public function test() {

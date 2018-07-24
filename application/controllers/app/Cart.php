@@ -2,56 +2,24 @@
 
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-// This can be removed if you use __autoload() in config.php OR use Modular Extensions
-/** @noinspection PhpIncludeInspection */
-require APPPATH . '/libraries/REST_Controller.php';
-
-/**
- * This is an example of a few basic user interaction methods you could use
- * all done with a hardcoded array
- *
- * @package         CodeIgniter
- * @subpackage      Rest Server
- * @category        Controller
- * @author          Phil Sturgeon, Chris Kacerguis
- * @license         MIT
- * @link            https://github.com/chriskacerguis/codeigniter-restserver
- */
-class Cart extends REST_Controller {
+class Cart extends BASE_Api {
 
     const CART_FLAG = 1;
     const BASE_URL = 'https://www.bigmee.com/';
 
     private $customer_id;
-    private $cu_profile;
 
     function __construct() {
         // Construct the parent class
         parent::__construct();
 
+        $this->customer_id = $this->{$this->input->server('REQUEST_METHOD')}('customer_id');
+        
         // initialize core api dependancy 
-        SELF::init();
+        parent::valid_customer($this->customer_id);
         $this->load->model('cart_model');
     }
-
-    private function init() {
-        $this->customer_id = $this->{$this->input->server('REQUEST_METHOD')}('customer_id');
-
-        if (empty($this->customer_id) || !is_numeric($this->customer_id)) {
-            $this->response(array('status' => REST_CONTROLLER::HTTP_BAD_REQUEST, 'data' => 'Required valid customer id.'));
-        }
-
-        // load common model
-        $this->load->model('mystore_model', 'mystore');
-
-        $customerData = $this->mystore->get_row_byid('customer_master', array('id' => $this->customer_id), array('id'));
-
-        if (empty($customerData)) {
-            $this->response(array('status' => REST_CONTROLLER::HTTP_BAD_REQUEST, 'data' => 'Invalid customer id.'));
-        }
-        $this->cu_profile = $customerData;
-    }
-
+    
     public function add_put() {
         $payload = json_decode($this->put('payload'), TRUE);
         if(empty($payload)) {

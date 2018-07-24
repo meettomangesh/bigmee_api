@@ -1,36 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-require_once APPPATH.'libraries/REST_Controller.php';
-
-class Mystore extends REST_Controller {
+class Mystore extends BASE_Api {
     private $customer_id;
-    private $cu_profile;
     
     public function __construct() {
         parent::__construct();
         
-        // initialize core api dependancy 
-        SELF::init();
-    }
-    
-    private function init() {
         $this->customer_id = $this->{$this->input->server('REQUEST_METHOD')}('customer_id');
         
-        if(empty($this->customer_id) || !is_numeric($this->customer_id)) {
-            $this->response(array('status' => REST_CONTROLLER::HTTP_BAD_REQUEST, 'data' => 'Required valid customer id.'));   
-        }
-        
-        // load common model
+        // initialize core api dependancy 
+        parent::valid_customer($this->customer_id);
         $this->load->model('mystore_model', 'mystore');
-        
-        $customerData = $this->mystore->get_row_byid('customer_master', 
-                array('id' => $this->customer_id), array('id'));
-        
-        if(empty($customerData)) {
-            $this->response(array('status' => REST_CONTROLLER::HTTP_BAD_REQUEST, 'data' => 'Invalid customer id.'));   
-        }
-        $this->cu_profile = $customerData;
     }
     
     public function list_get() {
