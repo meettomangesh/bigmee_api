@@ -11,6 +11,18 @@ class MY_model extends CI_Model {
         parent::__construct();
     }
 
+// 
+    protected function db_connect($db_name, $obj=TRUE) {
+        $this->db = $this->load->database($db_name, $obj);
+    }
+    
+    public function get_balance($acct_id, $type='acct_balance') {
+        $this->db->select($type)
+                 ->from('customer_master')
+                 ->where('id', $acct_id);
+            return $this->db->get()->row()->{$type};
+    }
+    
 // make user balance transaction entry and return txn id
     public function make_balance_transaction(array $txnData) {
         $this->db->set($txnData)
@@ -81,10 +93,23 @@ class MY_model extends CI_Model {
 
     public function get_row_byid($table_name, array $where, $fieldArray = array()) {
         $fieldArray = (count($fieldArray) > 0 ) ? $fieldArray : '*';
-
+        $or_where = (isset($where['or_where'])) ? $where['or_where'] : array();
+        unset($where['or_where']);
+        
         $this->db->select($fieldArray)
                 ->from($table_name)
                 ->where($where);
+        
+        if(!empty($or_where)){
+            if(count($or_where) > 1) {
+                foreach($or_where as $whereClouse) {
+                    $this->db->or_where($whereClouse);
+                }
+            }else{
+                $this->db->or_where($or_where);
+            }
+        }
+        
         return $this->db->get()->row();
     }
 
@@ -114,11 +139,11 @@ class MY_model extends CI_Model {
         return $last_id;
     }
 
-    public function get_active_message_api() {
-        return $this->db->select("api_id")
-                        ->from("sms_api")
-                        ->where('api_status', 1)
-                        ->get()->row();
-    }
+ public function get_active_message_api() {
+    return $this->db->select("api_id")
+                ->from("sms_api")
+                ->where(array('api_status' => 1, 'type' => 'sms'))
+                ->get()->row();
+ }
 
 }
