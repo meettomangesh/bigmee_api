@@ -507,9 +507,6 @@ class Telecom {
            // print_r($response['status']); die;
 		return $response;
     }
-    
-    public function testMethod(){
-        return 'Method from helper is called.';
-    }
+
 }
 

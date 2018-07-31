@@ -24,8 +24,9 @@ class TelecomApi extends BASE_Api {
 
     public function recharge_post() {
         echo '<pre>'; 
-        echo $this->telecom->testMethod();
-        print_r($_POST); 
+        //$response = $this->telecom->sendPay2all($_POST);
+        $response = $this->telecom->checkStatus_sendPay2all($_POST['payid']);
+        print_r($response); 
         exit;
         $this->response(array('status' => REST_Controller::HTTP_OK, 'data' => $cartData), REST_Controller::HTTP_OK);
     }    
