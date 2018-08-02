@@ -145,5 +145,18 @@ class MY_model extends CI_Model {
                 ->where(array('api_status' => 1, 'type' => 'sms'))
                 ->get()->row();
  }
+ 
+   public function get_tele_data_by($table_name, $where, $fieldArray = array(), $order_by = array()) {
+        $fieldArray = (count($fieldArray) > 0 ) ? $fieldArray : '*';
 
+        $this->db->select($fieldArray)
+                ->from($table_name)
+                ->where($where);
+
+        if ($order_by) {
+            $this->db->order_by($order_by[0], $order_by[1]);
+        }
+       // echo $this->db->get_compiled_select(); die;
+        return $this->db->get()->result_array();
+    }
 }

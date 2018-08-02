@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 09, 2018 at 06:58 PM
+-- Generation Time: Aug 02, 2018 at 09:03 PM
 -- Server version: 10.1.25-MariaDB
 -- PHP Version: 7.1.7
 
@@ -1117,7 +1117,7 @@ CREATE TABLE `customer_master` (
 INSERT INTO `customer_master` (`id`, `name`, `email`, `mobile`, `password`, `address`, `pincode`, `city`, `taluka`, `district`, `state`, `gender`, `profile_pic`, `acct_balance`, `acct_wallet`, `acct_lock`, `status`, `email_verification`, `mobile_verification`, `db_update_date`, `db_add_date`, `bdate`) VALUES
 (3, 'Devpro lance', 'devprolancing@gmail.com', '9860413108', '8775fd47c90b36802164b5be32517252', 'Pune, Kothrud.', 411038, 'Pune', 'Haveli', 'Pune', 'Maharashtra', 'Male', 'http://facebook.com/profile/jhssa8787dsa.jpg', 0.00, 0.00, 0.00, '1', 1, 0, '2017-12-21 00:58:54', '2017-12-20 19:28:54', NULL),
 (4, 'Ganesh Kasar', 'kasarganesh99@gmail.com', '9860413108', '92683ba8787c87580793c20d13c4d8e0', 'Pune, Kothrud.', 411038, 'Pune', 'Haveli', 'Pune', 'Maharashtra', 'Male', '', 0.00, 0.00, 0.00, '1', 0, 0, '2017-12-21 23:31:47', '2017-12-20 19:31:29', NULL),
-(5, 'mangesh navale', 'meettomangesh@gmail.com', '9730872969', 'e10adc3949ba59abbe56e057f20f883e', '', 0, '', '', '', '', 'Male', 'https://localhost/bigmee_cu_prod/uploads/profile_pic/5/capture001.png', 0.00, 0.00, 0.00, '1', 0, 0, '2018-04-08 18:00:36', '2018-04-08 06:22:49', '10081988');
+(5, '', 'meettomangesh2@gmail.com', '', 'e10adc3949ba59abbe56e057f20f883e', '', 0, '', '', '', '', '', 'https://localhost/bigmee_cu_prod/uploads/profile_pic/5/img15.jpg', 0.00, 0.00, 0.00, '1', 0, 0, '2018-04-29 14:45:04', '2018-04-08 06:22:49', '');
 
 -- --------------------------------------------------------
 
@@ -2549,6 +2549,8 @@ CREATE TABLE `sms_api` (
   `api_id` int(11) NOT NULL,
   `api_name` varchar(50) NOT NULL,
   `api_status` bigint(20) NOT NULL DEFAULT '0',
+  `type` enum('sms','telecom') NOT NULL,
+  `db_update_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `api_addon` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -2556,9 +2558,12 @@ CREATE TABLE `sms_api` (
 -- Dumping data for table `sms_api`
 --
 
-INSERT INTO `sms_api` (`api_id`, `api_name`, `api_status`, `api_addon`) VALUES
-(1, 'PayAll', 1, '2016-08-28 11:58:24'),
-(2, 'SarvSms', 0, '2016-08-28 11:58:24');
+INSERT INTO `sms_api` (`api_id`, `api_name`, `api_status`, `type`, `db_update_date`, `api_addon`) VALUES
+(1, 'EasyTech', 1, 'sms', '2018-05-27 12:56:27', '2016-08-28 06:28:24'),
+(2, 'PayAll', 0, 'sms', '2018-05-27 11:57:12', '2016-08-28 06:28:24'),
+(3, 'nWallet', 1, 'telecom', '2018-05-31 10:03:43', '2018-05-27 01:54:02'),
+(4, 'InstantPay', 0, 'telecom', '2018-05-31 10:03:47', '2018-05-30 06:45:15'),
+(5, 'Pay2All', 1, 'telecom', '2018-06-03 20:04:20', '2018-06-03 09:04:20');
 
 -- --------------------------------------------------------
 
@@ -3054,11 +3059,62 @@ INSERT INTO `tbd_area` (`tbd_area_id`, `acct_id`, `pincode_id`, `talarea_addon`)
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `telecom_api`
+--
+
+CREATE TABLE `telecom_api` (
+  `api_id` int(11) NOT NULL,
+  `api_name` varchar(100) CHARACTER SET utf8 NOT NULL,
+  `api_url` text CHARACTER SET utf8 NOT NULL,
+  `api_token` text NOT NULL,
+  `status` int(1) NOT NULL COMMENT '0-Inactive, 1-Active',
+  `db_add_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `db_update_date` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `telecom_api`
+--
+
+INSERT INTO `telecom_api` (`api_id`, `api_name`, `api_url`, `api_token`, `status`, `db_add_date`, `db_update_date`) VALUES
+(1, 'n-wallet', 'https://www.n-wallet.co.in/userloginm', '7573daad6c684d6c932e602ae13633ad', 1, '2018-05-29 16:06:37', '2018-05-29 06:30:36'),
+(2, 'instant pay', 'https://www.instantpay.in/', '', 0, '2018-05-29 16:23:34', '2018-05-29 06:30:39');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `telecom_plan`
+--
+
+CREATE TABLE `telecom_plan` (
+  `telecom_plan_id` bigint(20) NOT NULL,
+  `scheme_id` bigint(20) NOT NULL,
+  `provider_id` bigint(20) NOT NULL,
+  `first_range` bigint(20) NOT NULL,
+  `second_range` bigint(20) NOT NULL,
+  `flat_amt` int(20) NOT NULL DEFAULT '0',
+  `percentage` double(10,2) NOT NULL DEFAULT '0.00',
+  `plan_addon` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `telecom_plan`
+--
+
+INSERT INTO `telecom_plan` (`telecom_plan_id`, `scheme_id`, `provider_id`, `first_range`, `second_range`, `flat_amt`, `percentage`, `plan_addon`) VALUES
+(6, 1, 3, 100, 1, 0, 0.00, '2018-06-26 02:23:39'),
+(8, 1, 5, 1, 100, 0, 5.00, '2018-06-29 03:31:32'),
+(9, 1, 80, 1, 100, 0, 0.00, '2018-06-29 03:32:07');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `telecom_providers`
 --
 
 CREATE TABLE `telecom_providers` (
   `id` int(11) NOT NULL,
+  `api_id` int(11) NOT NULL DEFAULT '3',
   `service_id` int(11) NOT NULL,
   `provider_code` varchar(4) NOT NULL,
   `provider_name` varchar(255) NOT NULL,
@@ -3066,19 +3122,94 @@ CREATE TABLE `telecom_providers` (
   `status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '0-Deleted, 1-Active,2-Disabled',
   `db_add_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `db_update_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `telecom_providers`
 --
 
-INSERT INTO `telecom_providers` (`id`, `service_id`, `provider_code`, `provider_name`, `provider_logo`, `status`, `db_add_date`, `db_update_date`) VALUES
-(2, 7, 'RL', 'Reliance Dish TV', 'http://localhost/bigmee/dist/img/telecom/providers/HOq7SMCVnWrizY4eu35k1Am2y.png', '1', '2017-11-03 12:24:02', '2017-11-21 12:43:51'),
-(4, 6, 'IDA', 'Idea', 'http://localhost/bigmee/dist/img/telecom/providers/jbYoiytIhwTxDSrAL5Fg34en2.png', '1', '2017-11-03 16:00:44', '2017-11-21 14:43:01'),
-(6, 6, 'BSNL', 'BSNL Mobile', 'http://localhost/bigmee/dist/img/telecom/providers/yLs7UVh9dPIYumw1EK0ZkfgF6.png', '1', '2017-11-04 11:24:52', '2017-11-21 12:40:00'),
-(22, 5, 'TATA', 'Tata Photon Plus', 'http://localhost/bigmee/dist/img/telecom/providers/9sTxe4ImAJl7KOVuQv2Lgz8Xp.jpg', '1', '2017-11-06 15:09:09', '2017-11-21 12:41:59'),
-(28, 7, 'VDTV', 'Videocon Dish TV', 'http://localhost/bigmee/dist/img/telecom/providers/UbfSFQcBhzTWuKNj4Ei97xtDq.jpeg', '1', '2017-11-21 12:45:17', '2017-11-21 12:45:17'),
-(29, 5, 'RLN', 'Reliance Netconnect', 'http://localhost/bigmee/dist/img/telecom/providers/Rgz5DajTHWJymCuOMih3GcrVl.jpg', '1', '2017-11-22 17:36:55', '2017-11-22 17:36:55');
+INSERT INTO `telecom_providers` (`id`, `api_id`, `service_id`, `provider_code`, `provider_name`, `provider_logo`, `status`, `db_add_date`, `db_update_date`) VALUES
+(2, 5, 3, '1', 'AirTel', 'https://www.bigmee.com/dist/img/telecom/providers/gxRyAd7CK5MeuoHQrkjt0NBPX.png', '1', '2017-11-17 17:59:25', '2018-07-11 15:36:44'),
+(3, 3, 12, '42', 'Idea Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/z3DjfnrgXwWhmVHJObT2cl5oM.png', '1', '2017-11-17 18:00:05', '2018-06-04 11:18:58'),
+(4, 3, 3, '2', 'BSNL Top Up', 'https://www.bigmee.com/dist/img/telecom/providers/srg9alenNE2jTQAZ83Cib4JUF.png', '1', '2017-11-17 18:02:20', '2018-05-31 10:04:20'),
+(5, 3, 3, '167', 'JIO', 'https://www.bigmee.com/dist/img/telecom/providers/hKDPSLcWNwvYsRQ08MbgjHfkx.png', '1', '2017-12-02 21:24:28', '2018-05-23 17:57:08'),
+(6, 3, 4, '17', 'Dish TV', 'https://www.bigmee.com/dist/img/telecom/providers/2qrtPoxEMawu0Oe31zNvRk8dl.png', '1', '2017-12-02 21:33:24', '2018-05-24 15:31:18'),
+(8, 3, 3, '32', 'BSNL Special', 'https://www.bigmee.com/dist/img/telecom/providers/7KsnLveroZOMfUH5mJgClbic4.png', '1', '2018-05-23 17:48:11', '2018-05-23 17:48:11'),
+(9, 3, 3, '13', 'Docomo Top UP', 'https://www.bigmee.com/dist/img/telecom/providers/hU4spC2frg7k8lFDei5qHnyEo.jpg', '1', '2018-05-23 17:50:20', '2018-05-26 16:04:12'),
+(10, 3, 3, '31', 'Docomo Special', 'https://www.bigmee.com/dist/img/telecom/providers/G7k9ujpPHtOCex2l4YwUV3KrJ.jpg', '1', '2018-05-23 17:50:42', '2018-05-23 17:50:42'),
+(11, 3, 3, '4', 'Idea', 'https://www.bigmee.com/dist/img/telecom/providers/bqzr56McpBQmoenLG3dTNkKS8.png', '1', '2018-05-23 17:51:21', '2018-05-23 17:57:18'),
+(12, 3, 3, '196', 'Idea Roam', 'https://www.bigmee.com/dist/img/telecom/providers/TEbVvq8QmLltKPer6hk1npofF.png', '1', '2018-05-23 17:51:59', '2018-05-23 17:51:59'),
+(13, 3, 3, '203', 'MTNL Mumbai Topup', 'https://www.bigmee.com/dist/img/telecom/providers/aI1Ul2oe9NPXbkYQhzKrvtxGD.png', '1', '2018-05-23 17:58:58', '2018-05-23 17:58:58'),
+(14, 3, 3, '207', 'MTNL Mumbai Special', 'https://www.bigmee.com/dist/img/telecom/providers/6NqmdLCPQZ9t0Vj85FWh24DJa.png', '1', '2018-05-23 17:59:23', '2018-05-23 17:59:23'),
+(19, 3, 3, '12', 'Telenor Top UP', 'https://www.bigmee.com/dist/img/telecom/providers/A9nqJxpr8efDQK3w7oZWmFXah.jpg', '1', '2018-05-23 18:06:09', '2018-06-22 04:57:25'),
+(20, 3, 3, '46', 'Telenor Special', 'https://www.bigmee.com/dist/img/telecom/providers/cAxrpMZ3zuNbiFyWaSGIdw1D4.jpg', '1', '2018-05-23 18:06:56', '2018-06-22 04:56:52'),
+(24, 3, 3, '5', 'Vodafone', 'https://www.bigmee.com/dist/img/telecom/providers/WKxTiZ4YkrP9BeXhgJGaH31nM.jpg', '1', '2018-05-23 18:14:21', '2018-05-23 18:14:21'),
+(25, 3, 4, '22', 'Airtel DTH', 'https://www.bigmee.com/dist/img/telecom/providers/glqMQFID5jw0hH4VtPLyvNKkW.png', '1', '2018-05-24 15:22:56', '2018-05-24 15:22:56'),
+(26, 3, 4, '18', 'Big TV', 'https://www.bigmee.com/dist/img/telecom/providers/qcPtiZy8De4Avr1zXmsN0S9xG.jpg', '1', '2018-05-24 15:26:43', '2018-05-24 15:26:43'),
+(27, 3, 4, '20', 'Sun Direct', 'https://www.bigmee.com/dist/img/telecom/providers/Ec4asYKtjFBhZ0vdUGMQA5P23.jpg', '1', '2018-05-24 15:33:24', '2018-05-24 15:33:40'),
+(28, 3, 4, '19', 'Tata Sky', 'https://www.bigmee.com/dist/img/telecom/providers/7c5KdVYapFT4egGBwONuQzklC.png', '1', '2018-05-24 15:34:22', '2018-05-24 15:34:22'),
+(30, 3, 4, '21', 'Videocon D2h', 'https://www.bigmee.com/dist/img/telecom/providers/ePv7fZO3IT0t5gUScDAFdzkyK.jpeg', '1', '2018-05-24 15:35:31', '2018-05-24 15:35:31'),
+(33, 3, 5, '86', 'Airtel Landline', 'https://www.bigmee.com/dist/img/telecom/providers/7EJRdbqNoBlZewf6pHg1OMk3t.jpg', '1', '2018-05-24 15:39:54', '2018-05-24 16:14:54'),
+(35, 3, 12, '35', 'Airtel Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/ZTHpgYEn8PtcD6xXr7kqfvKUb.png', '1', '2018-05-24 15:52:29', '2018-05-24 15:52:29'),
+(37, 3, 5, '59', 'BSNL LANDLINE', 'https://www.bigmee.com/dist/img/telecom/providers/iOmVjsrdP2wH0ykUeLtlQ51FE.jpg', '1', '2018-05-24 16:01:27', '2018-05-24 17:12:30'),
+(38, 3, 12, '36', 'BSNL Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/tl4CWrHUgV7ZbkFx0GL5zyjs2.png', '1', '2018-05-24 16:02:01', '2018-05-24 16:02:01'),
+(39, 3, 5, '116', 'Docomo Landline', 'https://www.bigmee.com/dist/img/telecom/providers/Xl0635jrGVx9JKHFsPtwyTBnk.jpg', '1', '2018-05-24 16:03:35', '2018-05-24 16:14:43'),
+(40, 3, 12, '49', 'Docomo Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/K1gzMnj32kSJZ9pN4rIi0e6mE.png', '1', '2018-05-24 16:06:14', '2018-05-24 16:06:14'),
+(42, 3, 12, '168', 'Jio Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/3t4RDNS1vVy7coWejigXZ09k8.png', '1', '2018-05-24 16:21:39', '2018-05-24 16:21:39'),
+(44, 3, 5, '114', 'MTNL LANDLINE', 'https://www.bigmee.com/dist/img/telecom/providers/LDYhWu4Q158ABm07fZTrEVgOR.png', '1', '2018-05-24 16:27:06', '2018-05-24 16:27:06'),
+(46, 3, 8, '64', 'Oxicash', 'https://www.bigmee.com/dist/img/telecom/providers/uOogcmYNUZG5r36Tv8FQPWRJe.jpg', '1', '2018-05-24 16:34:10', '2018-05-24 16:34:10'),
+(47, 3, 11, '26', 'Reliance CDMA Bill', 'https://www.bigmee.com/dist/img/telecom/providers/FMVcW4Yn7gGmC6SoHeOTsaEpP.png', '1', '2018-05-24 16:43:54', '2018-05-24 16:43:54'),
+(48, 3, 11, '34', 'Reliance GSM Bill', 'https://www.bigmee.com/dist/img/telecom/providers/LEUbG9zAMm10tKs5Nu7wSxkrO.jpg', '1', '2018-05-24 16:45:50', '2018-05-24 16:48:25'),
+(54, 3, 12, '41', 'Tikona Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/1Qne5IKBTJa6qGd0PjLxDYk9U.png', '1', '2018-05-24 17:31:24', '2018-05-24 17:31:24'),
+(55, 3, 12, '33', 'Vodafone Postpaid', 'https://www.bigmee.com/dist/img/telecom/providers/TDZ4qKChlwoyJp3RL5MXrHEIG.jpg', '1', '2018-05-24 17:32:42', '2018-05-24 17:32:42'),
+(56, 3, 7, '131', 'Birla Sun Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/oPKpBRkyZQI6sYdM4wDOFrCqc.png', '1', '2018-05-24 17:38:46', '2018-05-24 17:38:46'),
+(57, 3, 7, '93', 'ICICI Pru Life', 'https://www.bigmee.com/dist/img/telecom/providers/tpH5wLBrdPMVfCjm1KUuiR6ZS.png', '1', '2018-05-24 17:41:48', '2018-05-24 17:41:48'),
+(58, 3, 9, '136', 'Adani Gas Limited', 'https://www.bigmee.com/dist/img/telecom/providers/vw5ahYo1sQMgb6tP4ULp0jxFd.jpg', '1', '2018-05-24 17:46:29', '2018-05-24 17:46:29'),
+(59, 3, 6, '180', 'Adani Power', 'https://www.bigmee.com/dist/img/telecom/providers/8I7bKvWs3QGAYzlfegxJ9LScn.png', '2', '2018-05-25 11:09:49', '2018-06-01 17:36:55'),
+(80, 5, 6, '98', 'MSEDC Limited', 'https://www.bigmee.com/dist/img/telecom/providers/M1LZIOrEHXV4xkW6dBaSo8itR.png', '1', '2018-05-25 11:29:31', '2018-06-03 20:07:15'),
+(82, 3, 13, '77', 'BK VODAFONE', 'https://www.bigmee.com/dist/img/telecom/providers/gsjtXC6ahLRVTvQK8PFElNZe5.png', '1', '2018-05-25 11:43:02', '2018-05-25 11:43:02'),
+(83, 3, 13, '208', 'RKT AIRTEL', 'https://www.bigmee.com/dist/img/telecom/providers/ASWFtJznT7M9yIvVNumj06DiZ.png', '1', '2018-05-25 11:45:29', '2018-05-25 11:45:29'),
+(84, 3, 13, '209', 'RKT IDEA', 'https://www.bigmee.com/dist/img/telecom/providers/RESk8JyO4eTZ2d9xoLjPYFIsX.png', '1', '2018-05-25 11:46:56', '2018-05-25 11:46:56'),
+(85, 3, 13, '210', 'RKT IDEA ROAM', 'https://www.bigmee.com/dist/img/telecom/providers/uyvICncELF6sHK1bjZQAzaiRJ.png', '1', '2018-05-25 11:47:52', '2018-05-25 11:47:52'),
+(86, 3, 13, '211', 'RKT JIO', 'https://www.bigmee.com/dist/img/telecom/providers/hQy6Cnl8buYzA3gJLirBScfjv.png', '1', '2018-05-25 11:49:25', '2018-05-25 11:49:25'),
+(88, 3, 13, '506', 'RKT Telenor Special New', 'https://www.bigmee.com/dist/img/telecom/providers/3bzDTKAsf57xHe642Y8ImUGt9.png', '1', '2018-05-25 11:53:22', '2018-05-25 11:53:22'),
+(90, 3, 13, '212', 'RKT VODAFONE', 'https://www.bigmee.com/dist/img/telecom/providers/k14jPuisAXqoUOYreI5vLltSw.jpg', '1', '2018-05-25 11:55:05', '2018-05-25 11:55:05'),
+(91, 3, 9, '135', 'GSPC Gas Company', 'https://www.bigmee.com/dist/img/telecom/providers/RFULQnTNjaCXYh3pGJ9x46Pwy.png', '1', '2018-05-25 12:42:26', '2018-05-25 12:42:26'),
+(92, 3, 9, '134', 'Indraprastha Gas', 'https://www.bigmee.com/dist/img/telecom/providers/q96e8zS2uF4rT7E1RwZCJjYk0.png', '1', '2018-05-25 12:43:13', '2018-05-25 12:43:13'),
+(93, 3, 9, '91', 'Mahanagar Gas Limited', 'https://www.bigmee.com/dist/img/telecom/providers/NJjmc1wZr859CGFdWtbzEQnMK.png', '1', '2018-05-25 12:44:00', '2018-05-25 12:44:00'),
+(95, 3, 6, '112', 'Tata Power', 'https://www.bigmee.com/dist/img/telecom/providers/noDYGrWustzPH1Kpwkgvq9f6S.png', '2', '2018-05-25 12:58:56', '2018-06-01 17:36:49'),
+(97, 3, 7, '152', 'Bajaj Allianz Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/GafuYlxH03okBRQCzJZpqIbPM.png', '1', '2018-05-25 13:02:17', '2018-05-25 13:02:17'),
+(98, 3, 7, '151', 'Bharti Axa', 'https://www.bigmee.com/dist/img/telecom/providers/89kOVdgNWmKsFJlD4o3ijcyIn.png', '1', '2018-05-25 13:02:57', '2018-05-25 13:02:57'),
+(99, 3, 7, '153', 'DLF Pramerica Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/AaOF8bpJMsRjeHUmqtQ94EgZk.png', '1', '2018-05-25 13:03:32', '2018-05-25 13:03:32'),
+(100, 3, 7, '62', 'Future Generali', 'https://www.bigmee.com/dist/img/telecom/providers/QLj10WrtdVAEZ9e6sUycHBIPo.png', '1', '2018-05-25 13:03:59', '2018-05-25 13:03:59'),
+(101, 3, 7, '132', 'India First Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/n6ABlqEOHZtseSXN4LYKa3v15.png', '1', '2018-05-25 13:04:30', '2018-05-25 13:04:30'),
+(102, 3, 7, '154', 'ING Vysya Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/lkiSMUd1yZOEV4YAmbwt2I38R.png', '1', '2018-05-25 13:04:56', '2018-05-25 13:04:56'),
+(103, 3, 7, '155', 'L and T General Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/ZV4X2efwBMJA9YoNvIHhmUs5S.png', '1', '2018-05-25 13:05:19', '2018-05-25 13:05:19'),
+(104, 3, 7, '60', 'LIC', 'https://www.bigmee.com/dist/img/telecom/providers/dVFrhXWS5OHg1flPsKEiT4Lq3.png', '1', '2018-05-25 13:05:43', '2018-05-25 13:05:43'),
+(105, 3, 7, '130', 'Reliance Life Insurence', 'https://www.bigmee.com/dist/img/telecom/providers/6cYLmPMBzdGS7aT14uCerJUnb.png', '1', '2018-05-25 13:06:27', '2018-05-25 13:06:27'),
+(106, 3, 7, '150', 'Tata AIA Life Insurance', 'https://www.bigmee.com/dist/img/telecom/providers/KcbRYJgiadAXUV1jNo2supqZv.png', '1', '2018-05-25 13:06:49', '2018-05-25 13:06:49'),
+(107, 3, 7, '92', 'Tata AIG Life', 'https://www.bigmee.com/dist/img/telecom/providers/MDCkO5WtTI3Z2ySwKHBuE0dae.png', '1', '2018-05-25 13:07:16', '2018-05-25 13:07:16'),
+(108, 3, 7, '156', 'Max New York', 'https://www.bigmee.com/dist/img/telecom/providers/e61tpGW57MhkfCaHuzxm0iPbE.png', '1', '2018-05-25 13:09:55', '2018-05-25 13:09:55'),
+(109, 3, 7, '61', 'MetLife', 'https://www.bigmee.com/dist/img/telecom/providers/u8NDVGi1vwF2CtokZ3cSHRnpz.png', '1', '2018-05-25 13:10:21', '2018-05-25 13:10:21');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `telecom_scheme`
+--
+
+CREATE TABLE `telecom_scheme` (
+  `scheme_id` bigint(20) NOT NULL,
+  `scheme_name` varchar(30) NOT NULL,
+  `db_add_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `telecom_scheme`
+--
+
+INSERT INTO `telecom_scheme` (`scheme_id`, `scheme_name`, `db_add_date`) VALUES
+(1, 'scheme demo 1', '2018-06-06 00:55:48');
 
 -- --------------------------------------------------------
 
@@ -3088,6 +3219,7 @@ INSERT INTO `telecom_providers` (`id`, `service_id`, `provider_code`, `provider_
 
 CREATE TABLE `telecom_services` (
   `id` int(11) NOT NULL,
+  `sequence` int(11) NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `service_logo` text NOT NULL,
   `status` enum('0','1','2') NOT NULL DEFAULT '1' COMMENT '0-Deleted,1-Active,2-Disabled',
@@ -3099,15 +3231,19 @@ CREATE TABLE `telecom_services` (
 -- Dumping data for table `telecom_services`
 --
 
-INSERT INTO `telecom_services` (`id`, `service_name`, `service_logo`, `status`, `db_add_date`, `db_update_date`) VALUES
-(5, 'DATA CARD', 'http://localhost/bigmee/dist/img/telecom/services/gadNEe9OKxQfoGB5FkzJTMiwX.png', '1', '2017-11-07 22:13:37', '2017-11-21 12:38:50'),
-(6, 'Mobile Bill', 'http://localhost/bigmee/dist/img/telecom/services/OvDXlu0mqipHLFoTYrMzet5Zy.png', '1', '2017-11-16 21:25:53', '2017-11-21 12:38:24'),
-(7, 'DTH', 'http://localhost/bigmee/dist/img/telecom/services/WOhruNy4cbEIna0dqlReTjkmg.png', '1', '2017-11-21 12:43:38', '2017-11-21 12:43:38'),
-(8, 'BROADBAND', 'http://localhost/bigmee/dist/img/telecom/services/t8N4bo0enDB1aqAXrELGTucv2.jpg', '1', '2017-11-21 15:01:42', '2017-11-21 15:01:42'),
-(9, 'INSURANCE', 'http://localhost/bigmee/dist/img/telecom/services/olEGVizOUe47qK9mavCQZnd2j.png', '1', '2017-11-22 17:15:50', '2017-11-22 17:15:50'),
-(10, 'TOLL TAG', 'http://localhost/bigmee/dist/img/telecom/services/Dw0bE5ot2kHjCfMA7ivNzTpc3.png', '1', '2017-11-22 17:22:10', '2017-11-22 17:22:10'),
-(11, 'GOVERNMENT', 'http://localhost/bigmee/dist/img/telecom/services/917iYOWaTuMgRbKhQyGzdcnpP.png', '1', '2017-11-22 17:24:54', '2017-11-22 17:24:54'),
-(12, 'WATER', 'http://localhost/bigmee/dist/img/telecom/services/HqxkowEINW4fZ7Sp2g3AuV68v.jpg', '1', '2017-11-22 17:28:26', '2017-11-22 17:28:26');
+INSERT INTO `telecom_services` (`id`, `sequence`, `service_name`, `service_logo`, `status`, `db_add_date`, `db_update_date`) VALUES
+(3, 1, 'PREPAID', 'https://www.bigmee.com/dist/img/telecom/services/qdJgCVjTp65L3xcAvho7IuwiR.png', '1', '2017-11-17 17:42:04', '2018-05-26 12:05:49'),
+(4, 3, 'DTH', 'https://www.bigmee.com/dist/img/telecom/services/7qNUXHl8j1MkxzaQmt5E3ibgn.png', '1', '2017-11-17 17:43:13', '2018-05-26 12:06:25'),
+(5, 4, 'LANDLINE', 'https://www.bigmee.com/dist/img/telecom/services/6Bf9UlCITQqcMmgsRWdP3vEo5.png', '1', '2017-11-17 17:45:40', '2018-05-26 12:06:29'),
+(6, 9, 'ELECTRICITY', 'https://www.bigmee.com/dist/img/telecom/services/p2SjXdl9b0ILQKMgDNVR86fv5.png', '1', '2017-11-17 17:48:56', '2018-05-26 12:07:11'),
+(7, 7, 'INSURANCE', 'https://www.bigmee.com/dist/img/telecom/services/2BMUaTto6sAPhCc1iZzp8RkNu.png', '1', '2017-11-17 17:50:19', '2018-05-26 12:06:47'),
+(8, 10, 'MONEY ', 'https://www.bigmee.com/dist/img/telecom/services/UtgjMilNO9eazYu6BAdbSrGCm.png', '1', '2017-11-17 17:51:53', '2018-05-26 12:07:15'),
+(9, 5, 'GAS BILL', 'https://www.bigmee.com/dist/img/telecom/services/5GrYK4PJc6HtlhMxSgNDdsAoy.png', '1', '2017-11-17 17:53:56', '2018-05-26 12:06:36'),
+(10, 11, 'LOAN EMI', 'https://www.bigmee.com/dist/img/telecom/services/7BMOlKQecGo96yUiYV1xRk2fJ.png', '1', '2017-11-17 17:55:17', '2018-05-26 12:07:21'),
+(11, 8, 'UTILITY BILL', 'https://www.bigmee.com/dist/img/telecom/services/qI8xNinkcm5vQVEsCw4P27Oe1.png', '0', '2017-11-17 17:56:08', '2018-05-26 16:37:34'),
+(12, 2, 'POSTPAID', 'https://www.bigmee.com/dist/img/telecom/services/xgBtUOQhHWYuK1ay4qL7MDsF0.png', '1', '2017-11-20 16:39:00', '2018-05-26 12:06:11'),
+(13, 6, 'DATA CARD', 'https://www.bigmee.com/dist/img/telecom/services/9wdVfWXzRgksjOIeKn4NDCTPc.png', '1', '2017-11-20 16:39:20', '2018-05-26 12:06:41'),
+(14, 12, 'PANCARD', 'https://www.bigmee.com/dist/img/telecom/services/fkItQGESW31CJpmcdViLaqZul.png', '0', '2017-11-28 11:30:11', '2018-05-26 16:37:30');
 
 -- --------------------------------------------------------
 
@@ -3118,15 +3254,19 @@ INSERT INTO `telecom_services` (`id`, `service_name`, `service_logo`, `status`, 
 CREATE TABLE `telecom_transaction` (
   `id` int(11) NOT NULL,
   `provider_id` int(11) NOT NULL,
+  `opcode` int(4) NOT NULL,
   `txn_id` int(11) DEFAULT NULL,
+  `reqid` varchar(100) NOT NULL,
+  `payid` bigint(20) NOT NULL,
   `uacct_id` bigint(20) DEFAULT NULL,
   `complaint_id` int(11) NOT NULL,
   `number` bigint(15) NOT NULL,
   `txn_amount` double(15,2) NOT NULL,
   `txn_reference` varchar(255) NOT NULL,
-  `txn_status` enum('0','1','2') NOT NULL COMMENT '0- Deleted, 1-Success, 2-Failed, 3-Waiting',
-  `txn_type` enum('0','1') NOT NULL COMMENT '0-Wallet, 1-Online',
-  `payment_status` enum('1','2','3') NOT NULL COMMENT '1-Success, 2-Failed, 3-Waiting',
+  `operator_ref` varchar(255) NOT NULL,
+  `txn_status` int(4) NOT NULL COMMENT '1-Success, 2-Failed, 3-Pending, 4-Refund',
+  `txn_type` tinyint(1) NOT NULL COMMENT '0-Wallet, 1-Online',
+  `payment_status` tinyint(1) NOT NULL COMMENT '1-Success, 2-Failed, 3-Waiting, 4-Refund',
   `db_add_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `db_update_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -3135,9 +3275,184 @@ CREATE TABLE `telecom_transaction` (
 -- Dumping data for table `telecom_transaction`
 --
 
-INSERT INTO `telecom_transaction` (`id`, `provider_id`, `txn_id`, `uacct_id`, `complaint_id`, `number`, `txn_amount`, `txn_reference`, `txn_status`, `txn_type`, `payment_status`, `db_add_date`, `db_update_date`) VALUES
-(1, 4, 645, 5, 0, 9890539487, 300.00, '12345', '1', '0', '1', '2017-11-29 12:03:22', '2017-12-05 14:50:03'),
-(2, 6, 645, 78, 0, 8888812345, 500.00, '54321', '2', '1', '3', '2017-11-29 17:03:28', '2017-12-01 11:50:19');
+INSERT INTO `telecom_transaction` (`id`, `provider_id`, `opcode`, `txn_id`, `reqid`, `payid`, `uacct_id`, `complaint_id`, `number`, `txn_amount`, `txn_reference`, `operator_ref`, `txn_status`, `txn_type`, `payment_status`, `db_add_date`, `db_update_date`) VALUES
+(1, 2, 1, 2827, '23c49315f5', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel Prepaid', '', 1002, 0, 2, '2018-05-20 17:52:59', '2018-05-20 17:52:59'),
+(2, 2, 1, 2828, '1d8f9b5cf0', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel Prepaid', '', 1002, 0, 2, '2018-05-20 17:59:18', '2018-05-20 17:59:18'),
+(3, 2, 1, 2829, 'f1ab54f54f', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel Prepaid', '', 1002, 0, 2, '2018-05-21 09:55:44', '2018-05-21 09:55:44'),
+(4, 2, 1, 2830, '333177e618', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel Prepaid', '', 1002, 0, 2, '2018-05-21 10:19:31', '2018-05-21 10:19:31'),
+(5, 2, 1, 2831, '7999889491', 0, 84, 0, 9890539487, 10.00, 'recharge ', '', 2, 0, 2, '2018-05-21 10:28:56', '2018-06-28 16:04:02'),
+(6, 3, 42, 2838, '2e9205aaaa', 0, 84, 0, 9552553500, 10.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-22 14:33:38', '2018-05-23 11:00:13'),
+(7, 3, 42, 2842, '10476e470e', 0, 84, 0, 8378988544, 10.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-22 15:06:10', '2018-05-23 11:00:09'),
+(8, 3, 42, 2844, '1a2ad25a01', 0, 84, 0, 8378988544, 7.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-22 15:13:38', '2018-05-23 11:00:04'),
+(9, 2, 1, 2846, '84e0c2dbec', 0, 84, 0, 9890539487, 10.00, 'recharge SUCCESS', '', 3, 0, 1, '2018-05-22 15:17:09', '2018-05-30 11:51:08'),
+(10, 2, 1, 2847, 'e35573c7f7', 0, 84, 0, 9552553500, 10.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-22 17:51:31', '2018-05-23 10:59:20'),
+(11, 3, 42, 2852, 'a074b80dde', 0, 84, 0, 8378988544, 10.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-23 13:40:48', '2018-05-23 13:41:07'),
+(12, 8, 32, 2855, '4a60560e7f', 0, 1, 0, 9420745450, 10.00, 'recharge PENDING', '', 1010, 0, 1, '2018-05-23 19:59:08', '2018-05-23 19:59:22'),
+(13, 2, 1, 2856, 'da3569650f', 0, 2, 0, 9890539487, 10.00, 'recharge SUCCESS', '', 3, 0, 1, '2018-05-25 10:04:25', '2018-05-30 11:51:08'),
+(14, 4, 2, 2859, '8e0285decb', 0, 1, 0, 9420745450, 10.00, 'recharge BSNL', '', 3, 0, 1, '2018-05-25 19:52:56', '2018-06-05 15:41:12'),
+(15, 9, 13, 2860, 'f74edfb5c6', 0, 1, 0, 8149178937, 10.00, 'recharge SUCCESS', '', 3, 0, 1, '2018-05-26 14:41:00', '2018-05-30 11:51:08'),
+(16, 37, 59, 2861, '57f2b5e11b', 0, 84, 0, 20, 10.00, 'recharge NOTFOUND', '', 1011, 0, 0, '2018-05-27 14:40:19', '2018-05-27 14:40:38'),
+(17, 2, 1, 2866, '8c0dbf8cf9', 0, 84, 0, 9890539487, 10.00, 'recharge NOTFOUND', '', 1011, 0, 0, '2018-05-27 17:10:18', '2018-05-27 17:10:29'),
+(18, 3, 42, 2867, '96ff23c5f6', 0, 84, 0, 9552553500, 10.00, 'recharge REFUND', '', 1014, 0, 4, '2018-05-27 17:11:10', '2018-05-27 17:11:19'),
+(19, 2, 1, 2869, '2d8b4265a9', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel', '', 3, 0, 3, '2018-05-27 17:11:32', '2018-06-28 16:03:52'),
+(20, 2, 1, 2870, 'a68dbde9ad', 0, 84, 0, 9890539487, 10.00, 'recharge AirTel', '', 3, 0, 3, '2018-05-27 17:14:18', '2018-06-28 16:03:52'),
+(21, 5, 167, 2877, '5a57221387', 0, 1399, 0, 9284660311, 10.00, 'recharge JIO', '', 1000, 0, 1, '2018-05-28 17:01:19', '2018-05-28 17:01:19'),
+(22, 3, 0, 2880, '', 0, 84, 0, 9552553500, 10.00, 'df0dac4489', '', 3, 0, 3, '2018-05-29 13:08:56', '2018-05-29 13:08:56'),
+(23, 3, 0, 2881, '', 0, 84, 0, 9552553500, 10.00, 'c355422f7e', '', 4, 0, 4, '2018-05-29 13:17:36', '2018-05-29 13:17:45'),
+(24, 3, 0, 2883, '', 0, 84, 0, 9552553500, 10.00, 'd38c3100ef', '', 4, 0, 4, '2018-05-29 13:22:33', '2018-05-29 13:22:50'),
+(25, 3, 0, 2885, '', 0, 84, 0, 9552553500, 5.00, '2efb9e6ab9', '', 4, 0, 4, '2018-05-29 17:33:19', '2018-05-29 17:33:35'),
+(26, 3, 0, 2891, '', 0, 84, 0, 9552553500, 5.00, '469977dc60', '', 4, 0, 4, '2018-05-30 17:48:16', '2018-06-14 14:29:54'),
+(27, 3, 0, 2895, '', 0, 84, 0, 9552553500, 5.00, 'a6c532925a', '', 4, 0, 4, '2018-05-31 17:23:14', '2018-05-31 17:23:44'),
+(28, 3, 0, 2922, '', 0, 84, 0, 9552553500, 10.00, 'b4a0546aad', '', 4, 0, 4, '2018-06-03 22:59:26', '2018-06-14 14:30:52'),
+(29, 3, 0, 2923, '', 0, 84, 0, 9552553500, 10.00, 'de9d4ed1ff', '', 4, 0, 4, '2018-06-03 23:00:59', '2018-06-14 14:30:36'),
+(30, 3, 0, 2927, '', 0, 84, 0, 9552553500, 10.00, 'febf1d1579', '', 4, 0, 4, '2018-06-03 23:58:01', '2018-06-14 14:31:20'),
+(31, 80, 0, 2929, '', 0, 84, 0, 16897646454, 100.00, '0fed85c171', '', 4, 0, 4, '2018-06-04 00:15:14', '2018-06-21 17:59:01'),
+(32, 80, 0, 2930, '', 0, 84, 0, 1600745475, 10.00, 'f2231cff8f', '', 2, 0, 2, '2018-06-04 00:21:01', '2018-06-21 18:12:08'),
+(33, 80, 0, 2931, '', 0, 84, 0, 454121321, 10.00, '8e86b97d54', '', 2, 0, 2, '2018-06-04 10:47:38', '2018-06-22 10:17:24'),
+(34, 2, 0, 2932, '', 0, 84, 0, 9552553500, 10.00, '64fb9089ad', '', 2, 0, 2, '2018-06-04 10:50:12', '2018-06-22 10:17:24'),
+(35, 2, 0, 2933, '', 0, 84, 0, 9552553500, 10.00, '71890288ba', '', 2, 0, 2, '2018-06-04 10:53:52', '2018-06-22 10:17:24'),
+(36, 2, 0, 2934, '', 0, 84, 0, 9552553500, 10.00, 'e5e46ec4a7', '', 2, 0, 2, '2018-06-04 10:55:07', '2018-06-22 10:17:24'),
+(37, 3, 0, 2935, '', 0, 84, 0, 9552553500, 10.00, '34688d9c28', '', 4, 0, 4, '2018-06-04 10:58:10', '2018-06-13 17:10:18'),
+(38, 2, 0, 2940, '', 0, 84, 0, 9552553500, 10.00, '86b56cbb05', '', 4, 0, 4, '2018-06-04 11:19:29', '2018-06-22 10:18:37'),
+(39, 2, 0, 2941, '', 32, 84, 0, 9552553500, 10.00, '469f847388', '', 2, 0, 2, '2018-06-04 12:01:22', '2018-06-23 16:47:15'),
+(40, 80, 0, 2942, '', 0, 84, 0, 162011055133, 1.00, '0589ea337b', '', 0, 0, 3, '2018-06-04 12:30:01', '2018-07-30 10:38:04'),
+(41, 80, 0, 2943, '', 9883146, 84, 0, 162011055133, 10.00, '5f5549df0d', 'Invalid Refill Amount', 2, 0, 2, '2018-06-04 12:30:58', '2018-06-06 10:25:52'),
+(42, 2, 0, 2944, '', 9883160, 84, 0, 9552553500, 10.00, '6a102f3afd', 'Nil', 4, 0, 4, '2018-06-04 12:31:53', '2018-06-13 17:00:47'),
+(43, 80, 0, 2945, '', 9883906, 1, 0, 162014651357, 100.00, '0099f4b0b7', 'Invalid Refill Amount', 2, 0, 2, '2018-06-04 13:22:46', '2018-06-05 14:28:46'),
+(44, 80, 0, 2946, '', 9883936, 1, 0, 162014651357, 900.00, 'e9552d96c2', 'Invalid Refill Amount', 2, 0, 2, '2018-06-04 13:24:24', '2018-06-05 14:28:41'),
+(45, 80, 0, 2947, '', 9883947, 1, 0, 162014651357, 990.00, 'b203fdb191', 'Invalid Refill Amount', 2, 0, 2, '2018-06-04 13:25:18', '2018-06-05 14:28:30'),
+(46, 80, 0, 2948, '', 9883958, 1, 0, 162014651357, 999.00, '0f1674ea98', 'Invalid Refill Amount', 2, 0, 2, '2018-06-04 13:26:30', '2018-06-05 14:26:21'),
+(47, 80, 0, 2949, '', 9883985, 1, 0, 162014651357, 1000.00, '7bf2861ced', 'EUR3033478775427967', 1, 0, 1, '2018-06-04 13:29:21', '2018-06-05 14:26:10'),
+(48, 4, 0, 2963, '', 0, 1, 0, 9420745450, 10.00, '38497fb717', '', 0, 0, 3, '2018-06-06 17:06:31', '2018-06-06 17:06:31'),
+(49, 24, 0, 2984, '', 0, 293, 0, 8698779624, 10.00, '9d08dad5df', '', 1, 0, 1, '2018-06-09 10:46:35', '2018-06-25 16:01:47'),
+(50, 24, 0, 2985, '', 0, 293, 0, 7030441029, 10.00, 'eae20c81c6', '', 1, 0, 1, '2018-06-09 10:51:16', '2018-06-25 16:01:53'),
+(51, 80, 0, 3014, '', 9935017, 1493, 0, 190560019231, 370.00, 'd8dc79961f', 'BD0120178320', 1, 0, 1, '2018-06-11 12:35:42', '2018-06-11 12:37:41'),
+(52, 80, 0, 3015, '', 9935181, 1493, 0, 190560009091, 1500.00, 'a024d9ec87', '7', 2, 0, 2, '2018-06-11 12:49:02', '2018-06-11 12:49:27'),
+(53, 80, 0, 3016, '', 32, 1493, 0, 190560009091, 1500.00, 'db7de0cd78', '', 3, 0, 3, '2018-06-11 12:53:34', '2018-06-11 12:54:17'),
+(54, 80, 0, 3017, '', 9935260, 1493, 0, 190560023654, 240.00, 'd03496d13c', 'BD0120182490', 1, 0, 1, '2018-06-11 12:56:03', '2018-06-11 19:35:11'),
+(55, 80, 0, 3018, '', 9935274, 1493, 0, 190560232385, 230.00, '8c6a3e1e04', '7', 2, 0, 2, '2018-06-11 12:57:09', '2018-06-11 19:35:00'),
+(56, 80, 0, 3019, '', 32, 1493, 0, 190560232385, 230.00, 'b36ad25a67', '', 3, 0, 3, '2018-06-11 12:57:54', '2018-06-11 16:17:43'),
+(57, 80, 0, 3023, '', 9937334, 1493, 0, 190560232385, 230.00, 'bd8e71e59f', '7', 2, 0, 2, '2018-06-11 17:18:33', '2018-06-11 17:19:55'),
+(58, 80, 0, 3024, '', 9937342, 1493, 0, 190560009091, 1500.00, '37a7af4b47', '7', 2, 0, 2, '2018-06-11 17:19:33', '2018-06-11 17:19:49'),
+(59, 80, 0, 3025, '', 9937353, 1493, 0, 190560009091, 1530.00, 'f41d1f2527', '7', 2, 0, 2, '2018-06-11 17:20:42', '2018-06-11 17:22:41'),
+(60, 80, 0, 3026, '', 9937389, 1493, 0, 190560232385, 240.00, 'c7d34ea766', 'BD0120225767', 1, 0, 1, '2018-06-11 17:26:17', '2018-06-11 17:27:58'),
+(61, 80, 0, 3027, '', 9937403, 1493, 0, 190560009091, 1530.00, 'c180f39c73', '7', 2, 0, 2, '2018-06-11 17:27:33', '2018-06-11 19:34:01'),
+(62, 80, 0, 3028, '', 9937413, 1493, 0, 190560009091, 1510.00, '9858cdcbe2', 'BD0120226151', 1, 0, 1, '2018-06-11 17:28:40', '2018-06-11 17:28:57'),
+(63, 28, 0, 3044, '', 0, 1493, 0, 1120951106, 600.00, '2c4344ec7e', '', 1, 0, 1, '2018-06-13 13:16:06', '2018-06-13 17:35:03'),
+(64, 28, 0, 3045, '', 0, 1493, 0, 1120951577, 600.00, 'd42d264c29', '', 1, 0, 1, '2018-06-13 13:17:37', '2018-06-13 17:32:09'),
+(65, 24, 0, 3058, '', 0, 293, 0, 8698779624, 199.00, 'ddfd6fc862', '', 4, 0, 4, '2018-06-17 09:12:01', '2018-07-19 16:13:58'),
+(66, 80, 0, 3063, '', 9978688, 84, 0, 162011055133, 10.00, '9e28922d2b', '', 4, 0, 4, '2018-06-17 12:21:15', '2018-07-06 12:54:48'),
+(67, 3, 0, 3065, '', 0, 84, 0, 9552553500, 10.00, '29f7d78e96', '', 4, 0, 4, '2018-06-17 13:02:54', '2018-06-17 13:03:44'),
+(68, 24, 0, 3067, '', 0, 293, 0, 8698779624, 10.00, 'fd05be62f2', '', 1, 0, 1, '2018-06-17 22:00:11', '2018-06-25 15:32:54'),
+(69, 24, 0, 3073, '', 0, 293, 33, 8698779624, 199.00, '496036dedb', '', 4, 0, 4, '2018-06-18 19:16:59', '2018-07-19 16:04:02'),
+(70, 80, 0, 3074, '', 9990191, 1493, 0, 190560305510, 700.00, '25606a117e', 'BD0121405387', 1, 0, 1, '2018-06-18 19:29:27', '2018-06-18 19:30:47'),
+(71, 80, 0, 3076, '', 9990242, 1493, 0, 190560077142, 220.00, '0ef6c21530', 'BD0121406337', 1, 0, 1, '2018-06-18 19:33:09', '2018-06-18 19:33:42'),
+(72, 80, 0, 3078, '', 9990273, 1493, 0, 190560098051, 560.00, '49ae56830a', 'BD0121406783', 1, 0, 1, '2018-06-18 19:35:16', '2018-06-18 19:39:32'),
+(73, 80, 0, 3080, '', 9990291, 1493, 0, 190560023646, 30.00, '2069466983', 'BD0121407254', 1, 0, 1, '2018-06-18 19:37:05', '2018-06-18 19:39:39'),
+(74, 80, 0, 3081, '', 32, 1493, 0, 190560023646, 30.00, 'a4f5a6fc3a', '', 4, 0, 4, '2018-06-18 19:37:12', '2018-07-06 12:46:28'),
+(75, 80, 0, 3084, '', 9990316, 1493, 0, 190560098069, 260.00, '2f266218df', 'BD0121407723', 1, 0, 1, '2018-06-18 19:38:56', '2018-06-18 19:39:54'),
+(76, 37, 0, 3086, '', 0, 1493, 0, 2162, 929.00, 'f517c5e2dc', '', 2, 0, 2, '2018-06-18 19:47:11', '2018-06-26 12:46:54'),
+(77, 3, 0, 3087, '', 0, 84, 0, 9552553500, 10.00, 'cd941a5167', '', 4, 0, 4, '2018-06-19 10:58:24', '2018-06-19 10:58:34'),
+(78, 3, 0, 3089, '', 0, 84, 0, 9552553500, 10.00, '8a014d191f', '', 4, 0, 4, '2018-06-19 13:34:41', '2018-06-19 13:34:57'),
+(79, 3, 0, 3091, '', 0, 84, 0, 9552553500, 10.00, '01c78fd1d9', '', 4, 0, 4, '2018-06-19 14:05:24', '2018-06-19 14:05:31'),
+(80, 37, 0, 3094, '', 0, 1493, 0, 2162253187, 929.00, '4ad49f82c1', '', 4, 0, 4, '2018-06-19 19:37:58', '2018-07-06 12:33:24'),
+(81, 37, 0, 3095, '', 0, 1493, 0, 2162, 929.00, '67e65e1dcc', '', 4, 0, 4, '2018-06-19 23:16:11', '2018-07-06 12:33:04'),
+(82, 37, 0, 3096, '', 0, 1493, 0, 2162253187, 929.00, '004327da50', '', 4, 0, 4, '2018-06-19 23:17:17', '2018-07-06 12:30:32'),
+(83, 4, 0, 3100, '', 0, 84, 0, 9421906445, 10.00, 'a4fce9d754', '', 1, 0, 1, '2018-06-22 13:10:11', '2018-06-22 13:10:22'),
+(84, 80, 0, 3101, '', 10018933, 1493, 0, 191940023785, 7130.00, 'bb8d76bc20', '', 1, 0, 1, '2018-06-22 20:51:36', '2018-06-30 17:55:47'),
+(85, 37, 0, 3104, '', 0, 1, 0, 2162253187, 929.00, 'f2d3273d12', '', 1, 0, 1, '2018-06-23 14:54:12', '2018-06-23 14:55:24'),
+(86, 24, 0, 3108, '', 0, 1131, 0, 9011119108, 50.00, '82c7462f9d', '', 1, 0, 1, '2018-06-23 15:24:27', '2018-06-23 15:42:11'),
+(87, 3, 0, 3109, '', 0, 84, 0, 9552553500, 10.00, 'e403d237ee', '', 4, 0, 2, '2018-06-25 17:58:38', '2018-06-25 18:05:00'),
+(88, 3, 0, 3110, '', 0, 84, 0, 9552553500, 10.00, 'e3692f3378', '', 4, 0, 2, '2018-06-25 18:00:53', '2018-06-25 18:05:04'),
+(89, 37, 0, 3111, '', 0, 1493, 0, 2162, 1408.00, '68d71c6bd8', '', 2, 0, 2, '2018-06-25 19:48:55', '2018-06-25 19:49:20'),
+(90, 37, 0, 3112, '', 0, 1493, 0, 2162238110, 1408.00, '970b6d1ce7', '', 4, 0, 4, '2018-06-25 19:50:11', '2018-06-25 19:50:30'),
+(91, 2, 0, 3114, '', 10040124, 84, 0, 9552553500, 10.00, 'b23c0fe027', '', 4, 0, 4, '2018-06-26 09:51:56', '2018-07-06 15:04:29'),
+(92, 37, 0, 3116, '', 0, 1493, 0, 2162238110, 1408.00, 'ac5af2edcd', '', 1, 0, 1, '2018-06-26 10:15:46', '2018-06-26 10:16:19'),
+(93, 2, 0, 3119, '', 0, 84, 0, 9552553500, 10.00, '53e38cd172', '', 2, 0, 2, '2018-06-26 11:15:13', '2018-06-26 11:15:21'),
+(94, 2, 0, 3123, '', 0, 84, 0, 9552553500, 10.00, '75b9757604', '', 4, 0, 4, '2018-06-26 11:32:50', '2018-06-26 12:07:38'),
+(95, 3, 0, 3124, '', 0, 84, 0, 9552553500, 10.00, '54c5580989', '', 4, 0, 4, '2018-06-26 11:36:33', '2018-06-26 12:07:24'),
+(96, 2, 0, 3125, '', 0, 84, 0, 9552553500, 10.00, '63d3d12b37', '', 4, 0, 4, '2018-06-26 11:40:56', '2018-06-26 12:07:33'),
+(97, 3, 0, 3126, '', 0, 84, 0, 9552553500, 10.00, 'c241f81ee5', '', 4, 0, 4, '2018-06-26 11:49:12', '2018-06-26 12:07:29'),
+(98, 3, 0, 3127, '', 0, 84, 0, 9552553500, 10.00, '2c0d5ca60c', '', 4, 0, 4, '2018-06-26 11:54:41', '2018-06-26 13:27:22'),
+(99, 80, 0, 3136, '', 10063168, 1493, 0, 190560043531, 1260.00, '7d6e6052da', '', 1, 0, 1, '2018-06-29 14:29:20', '2018-06-30 17:55:14'),
+(100, 80, 0, 3138, '', 10063190, 1493, 0, 190560065781, 800.00, '833ef68a33', '', 1, 0, 1, '2018-06-29 14:31:39', '2018-06-30 17:55:00'),
+(101, 80, 0, 3140, '', 10063194, 1493, 0, 190560135002, 570.00, '99df56ebb4', '', 1, 0, 1, '2018-06-29 14:33:10', '2018-06-30 17:54:49'),
+(102, 80, 0, 3142, '', 10063250, 1493, 0, 190560588562, 870.00, '82ffe4d269', '', 1, 0, 1, '2018-06-29 14:40:29', '2018-06-30 17:54:42'),
+(103, 80, 0, 3146, '', 10074509, 1493, 0, 190564007301, 1070.00, '51777fb5c3', '', 1, 0, 1, '2018-07-01 12:30:24', '2018-07-01 12:30:45'),
+(104, 80, 0, 3150, '', 10081483, 1493, 0, 190560344515, 140.00, '7df7145b85', '', 1, 0, 1, '2018-07-02 13:35:13', '2018-07-02 13:38:46'),
+(105, 80, 0, 3152, '', 10081491, 1493, 0, 190560047677, 810.00, '1a7a0195f3', '', 1, 0, 1, '2018-07-02 13:36:42', '2018-07-02 13:38:50'),
+(106, 80, 0, 3154, '', 10081509, 1493, 0, 190560272778, 340.00, '50028251c5', '', 1, 0, 1, '2018-07-02 13:38:25', '2018-07-02 13:38:54'),
+(107, 80, 0, 3156, '', 10081533, 1493, 0, 191944001816, 660.00, 'd7945c9806', '', 1, 0, 1, '2018-07-02 13:41:03', '2018-07-04 16:17:41'),
+(108, 80, 0, 3171, '', 10097197, 1493, 0, 190560232385, 270.00, '51124baa9e', '', 1, 0, 0, '2018-07-04 17:25:29', '2018-07-06 14:20:42'),
+(109, 80, 0, 3173, '', 0, 1493, 0, 190560023654, 270.00, 'e934efea4d', '', 4, 0, 4, '2018-07-04 17:27:23', '2018-07-06 12:28:43'),
+(110, 80, 0, 3175, '', 0, 1493, 0, 190560019231, 390.00, '1438966c04', '', 4, 0, 4, '2018-07-04 17:28:24', '2018-07-06 12:28:30'),
+(111, 80, 0, 3177, '', 0, 1493, 0, 190560009091, 1500.00, 'e681e3d3ab', '', 2, 0, 4, '2018-07-04 17:29:30', '2018-07-05 11:09:17'),
+(112, 80, 0, 3180, '', 0, 1493, 0, 190560023654, 270.00, '1326dc48f9', '', 4, 0, 4, '2018-07-04 23:06:24', '2018-07-06 12:28:14'),
+(113, 80, 0, 3182, '', 0, 1493, 0, 190560023654, 270.00, '6605020267', '', 4, 0, 4, '2018-07-04 23:08:49', '2018-07-06 12:28:02'),
+(114, 80, 0, 3184, '', 0, 1493, 0, 190560019231, 390.00, '0520942ac9', '', 4, 0, 4, '2018-07-04 23:12:23', '2018-07-06 12:27:51'),
+(115, 80, 0, 3186, '', 0, 1493, 0, 190560019231, 390.00, '0017816652', '', 4, 0, 4, '2018-07-04 23:14:28', '2018-07-06 11:15:08'),
+(116, 80, 0, 3189, '', 0, 1493, 0, 190560019231, 390.00, '5592da7434', '', 2, 0, 4, '2018-07-05 13:02:11', '2018-07-06 12:45:14'),
+(117, 80, 0, 3203, '', 0, 1493, 0, 190560299668, 570.00, 'ffc5c9412e', '', 2, 0, 0, '2018-07-06 13:17:29', '2018-07-06 14:24:03'),
+(118, 80, 0, 3205, '', 10109636, 1493, 0, 190560299668, 570.00, '87152ba6e5', '', 1, 0, 1, '2018-07-06 15:34:03', '2018-07-06 18:47:18'),
+(119, 80, 0, 3207, '', 10109691, 1493, 0, 190560361347, 2510.00, '71207ac941', '', 1, 0, 1, '2018-07-06 15:48:01', '2018-07-06 18:47:04'),
+(120, 80, 0, 3209, '', 10109698, 1493, 0, 190560572569, 2410.00, '10904d6c41', '', 1, 0, 1, '2018-07-06 15:49:46', '2018-07-06 18:46:49'),
+(121, 80, 0, 3211, '', 10109719, 1493, 0, 190560291659, 1480.00, 'e85d9f62e0', '', 1, 0, 1, '2018-07-06 15:51:53', '2018-07-06 16:25:08'),
+(122, 11, 0, 3222, '', 0, 84, 0, 9890539487, 10.00, 'a98dfe399c, ', '', 1, 0, 1, '2018-07-07 16:34:35', '2018-07-07 16:34:35'),
+(123, 11, 0, 3223, '', 0, 1, 0, 8378988544, 10.00, '0fe1f47415, ', '', 1, 0, 1, '2018-07-07 17:01:23', '2018-07-07 17:01:23'),
+(124, 80, 0, 3224, '', 10118102, 1493, 0, 190560478929, 570.00, 'aaf61047c9', '', 0, 0, 1, '2018-07-07 19:31:24', '2018-07-07 19:31:24'),
+(125, 28, 0, 3226, '', 0, 1493, 0, 1120951577, 600.00, 'b4dc42f59f', '', 1, 0, 1, '2018-07-07 19:35:28', '2018-07-07 19:35:28'),
+(126, 28, 0, 3227, '', 0, 1493, 0, 1120951106, 600.00, '02fe3bb36d', '', 1, 0, 1, '2018-07-07 19:40:43', '2018-07-07 19:40:43'),
+(127, 11, 0, 3229, '', 0, 84, 0, 9552553500, 10.00, '3638d9c80b', '', 1, 0, 1, '2018-07-09 13:31:51', '2018-07-09 13:31:51'),
+(128, 11, 0, 3230, '', 0, 84, 0, 9552553500, 10.00, 'TxnId: 3229, REFUND', '', 4, 0, 4, '2018-07-09 13:32:57', '2018-07-09 13:32:57'),
+(129, 11, 0, 3231, '', 0, 84, 0, 9552553500, 10.00, 'f1a2e3c1f4', '', 4, 0, 4, '2018-07-09 14:40:56', '2018-07-09 14:43:22'),
+(130, 11, 0, 3232, '', 0, 84, 0, 9552553500, 10.00, 'TxnId: 3231, REFUND', '', 4, 0, 4, '2018-07-09 14:43:22', '2018-07-09 14:43:22'),
+(131, 11, 0, 3237, '', 0, 84, 0, 9890539487, 10.00, 'fce9ba8926', 'SUCCESS', 4, 0, 4, '2018-07-09 15:46:48', '2018-07-09 17:27:03'),
+(132, 11, 0, 3240, '', 0, 84, 0, 9890539487, 10.00, 'TxnId: 3237, REFUND', '', 4, 0, 4, '2018-07-09 17:27:03', '2018-07-09 17:27:03'),
+(133, 80, 0, 3243, '', 10139598, 1493, 0, 190560060495, 780.00, '6e93b410c9', 'S', 0, 0, 1, '2018-07-10 22:51:02', '2018-07-10 22:51:02'),
+(134, 80, 0, 3245, '', 10143281, 1493, 0, 190560069662, 370.00, 'b24d9b8cbf', 'S', 0, 0, 1, '2018-07-11 14:23:03', '2018-07-11 14:23:03'),
+(135, 80, 0, 3247, '', 10143311, 1493, 0, 190560375160, 620.00, '61e8c3ea5d', 'S', 0, 0, 1, '2018-07-11 14:25:31', '2018-07-11 14:25:31'),
+(136, 80, 0, 3249, '', 10143320, 1493, 0, 190560375186, 190.00, 'fdb0b9b817', 'S', 0, 0, 1, '2018-07-11 14:27:00', '2018-07-11 14:27:00'),
+(137, 11, 0, 3253, '', 0, 84, 0, 9552553500, 10.00, 'd6e6b7f5e3', 'SUCCESS', 4, 0, 4, '2018-07-11 14:50:06', '2018-07-11 14:51:02'),
+(138, 11, 0, 3254, '', 0, 84, 0, 9552553500, 10.00, 'TxnId: 3253, REFUND', '', 4, 0, 4, '2018-07-11 14:51:02', '2018-07-11 14:51:02'),
+(139, 80, 0, 3255, '', 10143625, 1493, 0, 190560304947, 250.00, 'e7739df83e', 'S', 0, 0, 1, '2018-07-11 15:04:43', '2018-07-11 15:04:43'),
+(140, 80, 0, 3257, '', 10143638, 1493, 0, 190560305005, 110.00, '2ef49b26ba', 'S', 0, 0, 1, '2018-07-11 15:06:09', '2018-07-11 15:06:09'),
+(141, 80, 0, 3259, '', 10143648, 1493, 0, 190560304963, 150.00, 'a70b2e533f', 'S', 0, 0, 1, '2018-07-11 15:07:33', '2018-07-11 15:07:33'),
+(142, 80, 0, 3261, '', 10143655, 1493, 0, 190560305854, 30.00, '975d677c72', 'S', 0, 0, 1, '2018-07-11 15:08:38', '2018-07-11 15:08:38'),
+(143, 2, 0, 3263, '', 10143857, 84, 32, 9552553500, 10.00, '8f94f084d7', 'Pending', 4, 0, 4, '2018-07-11 15:37:48', '2018-07-13 16:52:53'),
+(144, 2, 0, 3264, '', 10143857, 84, 31, 9552553500, 10.00, 'TxnId: 3263, REFUND', '', 4, 0, 4, '2018-07-11 15:38:55', '2018-07-12 15:46:29'),
+(145, 24, 0, 3272, '', 0, 293, 0, 8698779624, 15.00, 'e93d552a60', 'SUCCESS', 1, 0, 1, '2018-07-15 19:11:46', '2018-07-15 19:11:46'),
+(146, 37, 0, 3280, '', 0, 1493, 0, 2162, 283.00, '111b9bfdcd', 'INVALID AMOUNT', 9, 0, 2, '2018-07-18 13:09:01', '2018-07-18 13:09:01'),
+(147, 37, 0, 3282, '', 0, 1493, 0, 2162230455, 283.00, '3da77b56af', 'SUCCESS', 1, 0, 1, '2018-07-18 13:38:37', '2018-07-18 13:38:37'),
+(148, 37, 0, 3283, '', 0, 1493, 0, 2162238110, 1414.00, '96154f179d', 'SUCCESS', 1, 0, 1, '2018-07-18 15:02:46', '2018-07-18 15:02:46'),
+(149, 24, 0, 3285, '', 0, 293, 33, 8698779624, 199.00, 'TxnId: 3073, REFUND', '', 4, 0, 4, '2018-07-19 16:04:02', '2018-07-19 16:04:02'),
+(150, 24, 0, 3286, '', 0, 293, 0, 8698779624, 199.00, 'TxnId: 3058, REFUND', '', 4, 0, 4, '2018-07-19 16:13:58', '2018-07-19 16:13:58'),
+(151, 11, 0, 3287, '', 0, 293, 0, 9527023396, 75.00, 'e911a18578', 'SUCCESS', 1, 0, 1, '2018-07-19 20:41:17', '2018-07-19 20:41:17'),
+(152, 24, 0, 3288, '', 0, 293, 0, 8698779624, 15.00, 'cd4328506b', 'SUCCESS', 1, 0, 1, '2018-07-19 20:43:20', '2018-07-19 20:43:20'),
+(153, 37, 0, 3295, '', 0, 1493, 0, 2162231678, 177.00, '8173c3b75c', 'SUCCESS', 1, 0, 1, '2018-07-23 15:39:05', '2018-07-23 15:39:05'),
+(154, 37, 0, 3297, '', 0, 1496, 0, 2466242080, 1415.00, '1f1e917483', '', 4, 0, 4, '2018-07-25 13:49:38', '2018-07-30 11:02:32'),
+(155, 24, 0, 3298, '', 0, 293, 0, 8698779624, 199.00, 'ccef5bc87b', 'SUCCESS', 1, 0, 1, '2018-07-26 12:25:04', '2018-07-26 12:25:04'),
+(156, 80, 0, 3300, '', 0, 1493, 0, 190560272778, 270.00, 'a1e5810e0c', 'Failed', 0, 0, 2, '2018-07-26 14:28:29', '2018-07-26 14:28:29'),
+(157, 80, 0, 3302, '', 0, 1493, 0, 190560272778, 270.00, 'eed923e8ce', 'Failed', 0, 0, 2, '2018-07-26 14:29:53', '2018-07-26 14:29:53'),
+(158, 80, 0, 3304, '', 0, 1493, 0, 190560344515, 300.00, 'b3671563e4', 'Failed', 0, 0, 2, '2018-07-26 14:31:15', '2018-07-26 14:31:15'),
+(159, 11, 0, 3306, '', 0, 1493, 0, 9881157934, 398.00, 'ed8eb7d54d', 'SUCCESS', 1, 0, 1, '2018-07-26 14:32:21', '2018-07-26 14:32:21'),
+(160, 80, 0, 3307, '', 0, 1493, 0, 190560344515, 300.00, 'cca2342aff', 'Failed', 0, 0, 2, '2018-07-26 14:33:30', '2018-07-26 14:33:30'),
+(161, 80, 0, 3309, '', 0, 1493, 0, 190560344515, 300.00, '9563a1f4b9', 'Failed', 0, 0, 2, '2018-07-26 16:16:19', '2018-07-26 16:16:19'),
+(162, 6, 0, 3311, '', 0, 293, 0, 1501662980, 400.00, 'f523c5ce45', 'INVALID MOBILE NO.', 8, 0, 2, '2018-07-27 10:16:10', '2018-07-27 10:16:10'),
+(163, 80, 0, 3323, '', 10278518, 1493, 0, 190560023654, 270.00, '4a46e95250', 'Failed', 0, 0, 2, '2018-07-28 18:45:36', '2018-07-28 18:45:36'),
+(164, 80, 0, 3325, '', 32, 1493, 0, 190560023654, 270.00, 'e644691201', 'Failed', 0, 0, 2, '2018-07-28 18:47:33', '2018-07-28 18:47:33'),
+(165, 37, 0, 3330, '', 0, 1496, 0, 2466242080, 1415.00, 'TxnId: 3297, REFUND', '', 4, 0, 4, '2018-07-30 11:02:32', '2018-07-30 11:02:32'),
+(166, 80, 0, 3334, '', 10291489, 1493, 35, 190560588562, 1180.00, 'e6562af697', 'Success', 0, 0, 1, '2018-07-30 19:22:48', '2018-07-30 22:43:33'),
+(167, 80, 0, 3338, '', 10296575, 1493, 36, 190560023654, 270.00, '89d175097b', 'Failed', 0, 0, 2, '2018-07-31 14:19:23', '2018-07-31 15:12:06'),
+(168, 80, 0, 3341, '', 10303016, 1493, 0, 191944001816, 240.00, '0b24dd15ab', 'Success', 0, 0, 1, '2018-08-01 12:37:27', '2018-08-01 12:37:27'),
+(169, 80, 0, 3343, '', 10303100, 1493, 0, 190560023654, 270.00, 'b98a708bc9', 'Success', 0, 0, 1, '2018-08-01 12:46:21', '2018-08-01 12:46:21'),
+(170, 80, 0, 3345, '', 10303114, 1493, 0, 190560019231, 390.00, '5315f14591', 'Success', 0, 0, 1, '2018-08-01 12:48:11', '2018-08-01 12:48:11'),
+(171, 80, 0, 3347, '', 10303153, 1493, 0, 190560009091, 1460.00, '3cff80c601', 'Success', 0, 0, 1, '2018-08-01 12:53:26', '2018-08-01 12:53:26'),
+(172, 80, 0, 3349, '', 10303160, 1493, 0, 190560232385, 270.00, 'cafcfd17b4', 'Success', 0, 0, 1, '2018-08-01 12:54:23', '2018-08-01 12:54:23'),
+(173, 80, 0, 3356, '', 10311119, 1493, 0, 190560299668, 490.00, '83fdf06601', 'Success', 0, 0, 1, '2018-08-02 16:48:36', '2018-08-02 16:48:36'),
+(174, 80, 0, 3358, '', 10311137, 1493, 0, 190560572569, 2340.00, '9757605809', 'Success', 0, 0, 1, '2018-08-02 16:50:36', '2018-08-02 16:50:36'),
+(175, 80, 0, 3360, '', 10311149, 1493, 0, 190560361347, 1800.00, 'c86d166e6e', 'Success', 0, 0, 1, '2018-08-02 16:52:58', '2018-08-02 16:52:58'),
+(176, 80, 0, 3362, '', 10311156, 1493, 0, 190560291659, 1080.00, 'f6f93295ff', 'Success', 0, 0, 1, '2018-08-02 16:54:25', '2018-08-02 16:54:25'),
+(177, 11, 0, 3368, '', 0, 1493, 0, 8308000025, 199.00, '7ab95d9b35', 'SUCCESS', 1, 0, 1, '2018-08-02 17:02:43', '2018-08-02 17:02:43');
 
 -- --------------------------------------------------------
 
@@ -3823,7 +4138,9 @@ ALTER TABLE `sbd_area`
 -- Indexes for table `sms_api`
 --
 ALTER TABLE `sms_api`
-  ADD PRIMARY KEY (`api_id`);
+  ADD PRIMARY KEY (`api_id`),
+  ADD KEY `api_status` (`api_status`),
+  ADD KEY `type` (`type`);
 
 --
 -- Indexes for table `social_user`
@@ -3907,19 +4224,41 @@ ALTER TABLE `tbd_area`
   ADD KEY `pincode_id` (`pincode_id`);
 
 --
+-- Indexes for table `telecom_api`
+--
+ALTER TABLE `telecom_api`
+  ADD PRIMARY KEY (`api_id`);
+
+--
+-- Indexes for table `telecom_plan`
+--
+ALTER TABLE `telecom_plan`
+  ADD PRIMARY KEY (`telecom_plan_id`),
+  ADD KEY `provider_id` (`provider_id`),
+  ADD KEY `scheme_id` (`scheme_id`);
+
+--
 -- Indexes for table `telecom_providers`
 --
 ALTER TABLE `telecom_providers`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `service_code` (`provider_code`),
+  ADD KEY `service_id` (`service_id`),
   ADD KEY `status` (`status`),
-  ADD KEY `service_id` (`service_id`);
+  ADD KEY `provider_code` (`provider_code`),
+  ADD KEY `api_id` (`api_id`);
+
+--
+-- Indexes for table `telecom_scheme`
+--
+ALTER TABLE `telecom_scheme`
+  ADD PRIMARY KEY (`scheme_id`);
 
 --
 -- Indexes for table `telecom_services`
 --
 ALTER TABLE `telecom_services`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `status` (`status`);
 
 --
 -- Indexes for table `telecom_transaction`
@@ -4218,7 +4557,7 @@ ALTER TABLE `sbd_area`
 -- AUTO_INCREMENT for table `sms_api`
 --
 ALTER TABLE `sms_api`
-  MODIFY `api_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `api_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `social_user`
 --
@@ -4270,20 +4609,35 @@ ALTER TABLE `taluka_list`
 ALTER TABLE `tbd_area`
   MODIFY `tbd_area_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
+-- AUTO_INCREMENT for table `telecom_api`
+--
+ALTER TABLE `telecom_api`
+  MODIFY `api_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `telecom_plan`
+--
+ALTER TABLE `telecom_plan`
+  MODIFY `telecom_plan_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+--
 -- AUTO_INCREMENT for table `telecom_providers`
 --
 ALTER TABLE `telecom_providers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+--
+-- AUTO_INCREMENT for table `telecom_scheme`
+--
+ALTER TABLE `telecom_scheme`
+  MODIFY `scheme_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `telecom_services`
 --
 ALTER TABLE `telecom_services`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT for table `telecom_transaction`
 --
 ALTER TABLE `telecom_transaction`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=178;
 --
 -- AUTO_INCREMENT for table `top_product`
 --
