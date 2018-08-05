@@ -14,35 +14,33 @@ class TelecomApi extends BASE_Api {
         parent::__construct();
 
         $this->customer_id = $this->{$this->input->server('REQUEST_METHOD')}('customer_id');
-        
+
         // initialize core api dependancy 
         parent::valid_customer($this->customer_id);
         $this->load->model('telecomserviceapi_model');
         $this->load->library('telecom');
         $this->load->model('cart_model');
     }
-    
 
     public function recharge_post() {
-        echo '<pre>'; 
+        echo '<pre>';
         //$response = $this->telecom->sendPay2all($_POST);
         $response = $this->telecom->checkStatus_sendPay2all($_POST['payid']);
-        print_r($response); 
+        print_r($response);
         exit;
         $this->response(array('status' => REST_Controller::HTTP_OK, 'data' => $cartData), REST_Controller::HTTP_OK);
-    }    
-	
-	public function teleservices_post() {
+    }
+
+    public function teleservices_post() {
         $serviceData = $this->telecomserviceapi_model->get_data_by('telecom_services', array('status' => '1'), array('id', 'service_name', 'status', 'service_logo'), array('sequence', 'asc'));
         //$api = $this->supplier_model->get_row_byid('telecom_api', array('status' => 1), array('api_id'));
-        
         //$api = $this->supplier_model->get_row_byid('sms_api', array('api_status' => 1,'type' => 'telecom'), array('api_id'));
         $api = $this->telecomserviceapi_model->get_data_by('sms_api', array('type' => 'telecom', 'api_status' => 1), array('api_id'));
         $apiId = array_column($api, 'api_id');
-        
+
         foreach ($serviceData as $sKey => $serviceRow) {
             //$providerData = $this->supplier_model->get_data_by('telecom_providers', array('service_id' => $serviceRow['id'], 'status' => '1','api_id' => $api->api_id), array('id', 'provider_name', 'provider_code', 'status', 'provider_logo'), array('provider_name', 'asc'));
-            $condition = 'service_id='. $serviceRow['id'].' AND status="1" AND (api_id = "3" OR api_id = "5")';
+            $condition = 'service_id=' . $serviceRow['id'] . ' AND status="1" AND (api_id = "3" OR api_id = "5")';
             $providerData = $this->telecomserviceapi_model->get_tele_data_by('telecom_providers', $condition, array('id', 'api_id', 'provider_name', 'provider_code', 'status', 'provider_logo'), array('provider_name', 'asc'));
             $serviceData[$sKey]['providers'] = $providerData;
         }
@@ -50,6 +48,26 @@ class TelecomApi extends BASE_Api {
         $response['data'] = $serviceData;
         die(json_encode($response));
     }
-	
+
+    public function getProviderDataByServiceId_post() {
+        $serviceId = $this->post('service_id');
+        if(empty($serviceId) || $serviceId == '') {
+            $this->response(array('status' => REST_Controller::HTTP_BAD_REQUEST, 'data' => 'Please provide service id.'));
+        }
+        $condition = 'service_id=' . $serviceId . ' AND status="1" AND (api_id = "3" OR api_id = "5")';
+        $providerData = $this->telecomserviceapi_model->get_tele_data_by('telecom_providers', $condition, array('id', 'api_id', 'provider_name', 'provider_code', 'status', 'provider_logo'), array('provider_name', 'asc'));
+        if(empty($providerData)){
+           $this->response(array('status' => REST_Controller::HTTP_BAD_REQUEST, 'data' => 'Please provide valid service id.')); 
+        }
+        foreach ($providerData as $sKey => $providerRow) {
+            //$providerData = $this->supplier_model->get_data_by('telecom_providers', array('service_id' => $serviceRow['id'], 'status' => '1','api_id' => $api->api_id), array('id', 'provider_name', 'provider_code', 'status', 'provider_logo'), array('provider_name', 'asc'));
+            $planData = $this->telecomserviceapi_model->getPlanDataByProviderId($providerRow['id']);
+            $providerData[$sKey]['plan'] = $planData;
+            $providerData[$sKey]['formElement'] = $this->telecomserviceapi_model->getFormFieldsByServiceId($serviceId);
+            $providerData[$sKey]['otherFormElement'] = $this->telecomserviceapi_model->loadOtherParamByServiceId($serviceId);
+        }
+        
+        $this->response(array('status' => REST_CONTROLLER::HTTP_OK, 'data' => $providerData));
+    }
 
 }
